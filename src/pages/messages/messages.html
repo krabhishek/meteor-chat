@@ -15,11 +15,15 @@
 
 <ion-content padding class="messages-page-content">
   <ion-scroll scrollY="true" class="messages">
-    <div *ngFor="let message of messages | async" class="message-wrapper">
-      <div [class]="'message message-' + message.ownership">
-        <div *ngIf="message.type == 'text'" class="message-content message-content-text">{{message.content}}</div>
-        <span class="message-timestamp">{{ message.createdAt | amDateFormat: 'HH:mm' }}</span>
+    <div *ngFor="let day of messagesDayGroups | async" class="day-wrapper">
+      <div *ngFor="let message of day.messages" class="message-wrapper">
+        <div [class]="'message message-' + message.ownership">
+          <div *ngIf="message.type == 'text'" class="message-content message-content-text">{{message.content}}</div>
+          <span class="message-timestamp">{{ message.createdAt | amDateFormat: 'HH:mm' }}</span>
+        </div>
       </div>
+
+      <div *ngIf="!day.today" class="day-timestamp">{{day.timestamp}}</div>
     </div>
   </ion-scroll>
 </ion-content>
@@ -30,12 +34,12 @@
 
     <ion-buttons end>
       <button ion-button icon-only *ngIf="message" class="message-editor-button" (click)="sendTextMessage()">
-        <ion-icon name="send"></ion-icon>
-      </button>
+          <ion-icon name="send"></ion-icon>
+        </button>
 
       <button ion-button icon-only *ngIf="!message" class="message-editor-button">
-        <ion-icon name="mic"></ion-icon>
-      </button>
+          <ion-icon name="mic"></ion-icon>
+        </button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>
