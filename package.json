@@ -1,8 +1,8 @@
 {
   "name": "meteor-chat",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "http://ionicframework.com/",
+  "author": "Abhishek Kumar <abhishek@petabyte.io>",
+  "homepage": "",
   "private": true,
   "scripts": {
     "clean": "ionic-app-scripts clean",
@@ -32,7 +32,13 @@
   },
   "devDependencies": {
     "@ionic/app-scripts": "2.1.4",
-    "typescript": "2.3.4"
+    "@types/underscore": "^1.8.3",
+    "meteor-typings": "^1.4.1",
+    "typescript": "2.3.4",
+    "typescript-extends": "^1.0.1"
   },
-  "description": "An Ionic project"
+  "description": "A demo clone of WhatsApp to learn Connected Client design pattern",
+  "config": {
+    "ionic_webpack": "./webpack.config.js"
+  }
 }
