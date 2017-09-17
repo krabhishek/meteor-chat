@@ -1,8 +1,8 @@
 export const DEFAULT_PICTURE_URL = '/assets/default-profile-pic.svg';
 
 export interface Profile {
- name?: string;
- picture?: string;
+    name?: string;
+    picture?: string;
 }
 
 export enum MessageType {
@@ -14,6 +14,7 @@ export interface Chat {
     title?: string;
     picture?: string;
     lastMessage?: Message;
+    memberIds?: string[];
 }
 
 export interface Message {
@@ -24,4 +25,8 @@ export interface Message {
     createdAt?: Date;
     type?: MessageType;
     ownership?: string;
+}
+
+export interface User extends Meteor.User {
+    profile?: Profile;
 }
