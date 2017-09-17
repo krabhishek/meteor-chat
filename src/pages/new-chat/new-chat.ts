@@ -42,7 +42,12 @@ export class NewChatPage implements OnInit {
   }
 
   loadUsers(): void {
-    this.users = this.findUsers();
+    const subscription = MeteorObservable.subscribe('users');
+    const autorun = MeteorObservable.autorun();
+
+    Observable.merge(subscription, autorun).subscribe(() => {
+      this.users = this.findUsers();
+    });
   }
 
   findUsers(): Observable<User[]> {

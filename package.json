@@ -41,6 +41,7 @@
     "@ionic/app-scripts": "2.1.4",
     "@types/meteor": "^1.4.6",
     "@types/meteor-accounts-phone": "0.0.5",
+    "@types/meteor-publish-composite": "0.0.32",
     "@types/underscore": "^1.8.3",
     "meteor-typings": "^1.4.1",
     "tmp": "0.0.33",

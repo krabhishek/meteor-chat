@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subscriber } from "rxjs";
 import { MeteorObservable } from "meteor-rxjs";
-import { IonicPage, NavController, NavParams, PopoverController, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, PopoverController, ModalController, AlertController } from 'ionic-angular';
 import { Chat, Message } from "api/models";
 import { Chats, Messages, Users } from "api/collections";
 
@@ -16,11 +16,12 @@ export class ChatsPage implements OnInit {
   senderId: string;
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     private popoverCtrl: PopoverController,
-    private modalCtrl: ModalController
-  ) { 
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
+  ) {
     this.senderId = Meteor.userId();
   }
 
@@ -30,7 +31,11 @@ export class ChatsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.chats = this.findChats();
+    MeteorObservable.subscribe('chats').subscribe(() => {
+      MeteorObservable.autorun().subscribe(() => {
+        this.chats = this.findChats();
+      });
+    });
   }
 
   findChats(): Observable<Chat[]> {
@@ -39,29 +44,29 @@ export class ChatsPage implements OnInit {
       chats.forEach(chat => {
         chat.title = '';
         chat.picture = '';
- 
+
         const receiverId = chat.memberIds.find(memberId => memberId !== this.senderId);
         const receiver = Users.findOne(receiverId);
- 
+
         if (receiver) {
           chat.title = receiver.profile.name;
           chat.picture = receiver.profile.picture;
         }
- 
+
         // This will make the last message reactive
         this.findLastChatMessage(chat._id).subscribe((message) => {
           chat.lastMessage = message;
         });
       });
- 
+
       return chats;
     });
   }
- 
+
   findLastChatMessage(chatId: string): Observable<Message> {
     return Observable.create((observer: Subscriber<Message>) => {
       const chatExists = () => !!Chats.findOne(chatId);
- 
+
       // Re-compute until chat is removed
       MeteorObservable.autorun().takeWhile(chatExists).subscribe(() => {
         Messages.find({ chatId }, {
@@ -72,7 +77,7 @@ export class ChatsPage implements OnInit {
             if (!messages.length) {
               return;
             }
- 
+
             const lastMessage = messages[0];
             observer.next(lastMessage);
           },
@@ -88,25 +93,41 @@ export class ChatsPage implements OnInit {
   }
 
   showMessages(chat): void {
-    this.navCtrl.push('MessagesPage', {chat});
+    this.navCtrl.push('MessagesPage', { chat });
   }
 
   showOptions(): void {
-    
+
     /* @krabhishek - creating popover as a page because of this bug: https://github.com/ionic-team/ionic/issues/11111 */
-    
+
     const popover = this.popoverCtrl.create('ChatsOptionsPage', {}, {
       cssClass: 'options-popover chats-options-popover'
     });
- 
+
     popover.present();
   }
 
 
   removeChat(chat: Chat): void {
-    Chats.remove({ _id: chat._id }).subscribe(() => {
-
+    MeteorObservable.call('removeChat', chat._id).subscribe({
+      error: (e: Error) => {
+        if (e) {
+          this.handleError(e);
+        }
+      }
     });
+  }
+
+  handleError(e: Error): void {
+    console.error(e);
+
+    const alert = this.alertCtrl.create({
+      buttons: ['OK'],
+      message: e.message,
+      title: 'Oops!'
+    });
+
+    alert.present();
   }
 
   ionViewDidLoad() {
