@@ -34,6 +34,10 @@ export class ChatsPage implements OnInit {
       ).zone();
   }
 
+  showMessages(chat): void {
+    this.navCtrl.push('MessagesPage', {chat});
+  }
+
 
   removeChat(chat: Chat): void {
     Chats.remove({ _id: chat._id }).subscribe(() => {
