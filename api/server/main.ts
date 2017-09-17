@@ -1,11 +1,16 @@
 import { Meteor } from 'meteor/meteor';
-import { Chats } from "./collections/chats";
-import { Messages } from "./collections/messages";
+import { Chats } from './collections/chats';
+import { Messages } from './collections/messages';
 import * as moment from 'moment';
-
-import { MessageType } from "./models";
+import { MessageType } from './models';
+import { Accounts } from 'meteor/accounts-base';
 
 Meteor.startup(() => {
+  if (Meteor.settings) {
+    Object.assign(Accounts._options, Meteor.settings['accounts-phone']);
+    SMS.twilio = Meteor.settings['twilio']; // please provide your own twilio details in api/private/settings.json file
+  }
+
   if (Chats.find({}).cursor.count() === 0) {
     let chatId;
 
