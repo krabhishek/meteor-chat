@@ -73,7 +73,7 @@ Meteor.methods({
     addMessage(type: MessageType, chatId: string, content: string) {
 
         if (!this.userId) throw new Meteor.Error('unauthorized', 'User must be logged-in to start a new chat');
-        check(type, Match.OneOf(String, [MessageType.TEXT]));
+        check(type, Match.OneOf(String, [MessageType.TEXT, MessageType.LOCATION]));
         check(chatId, nonEmptyString);
         check(content, nonEmptyString);
 

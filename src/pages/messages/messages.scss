@@ -81,6 +81,10 @@
         content: " \00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0";
         display: inline;
       }
+      .sebm-google-map-container {
+        height: 25vh;
+        width: 35vh;
+      }
     }
     .message-timestamp {
       position: absolute;
@@ -108,3 +112,4 @@
     margin: auto;
   }
 }
+
