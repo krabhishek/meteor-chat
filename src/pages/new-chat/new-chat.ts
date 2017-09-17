@@ -4,7 +4,7 @@ import { Chats, Users } from "api/collections";
 import { User } from "api/models";
 import { MeteorObservable } from "meteor-rxjs";
 import { _ } from "meteor/underscore";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subscription, BehaviorSubject } from "rxjs";
 
 @IonicPage()
 @Component({
@@ -13,6 +13,7 @@ import { Observable, Subscription } from "rxjs";
 })
 export class NewChatPage implements OnInit {
 
+  searchPattern: BehaviorSubject<any>;
   senderId: string;
   users: Observable<User[]>;
   usersSubscription: Subscription;
@@ -22,10 +23,27 @@ export class NewChatPage implements OnInit {
     private viewCtrl: ViewController
   ) {
     this.senderId = Meteor.userId();
+    this.searchPattern = new BehaviorSubject(undefined);
   }
 
   ngOnInit() {
-    this.loadUsers();
+    this.observeSearchBar();
+  }
+
+  updateSubscription(newValue) {
+    this.searchPattern.next(newValue);
+  }
+
+  observeSearchBar(): void {
+    this.searchPattern.asObservable()
+      .debounce(() => Observable.timer(1000))
+      .forEach(() => {
+        if (this.usersSubscription) {
+          this.usersSubscription.unsubscribe();
+        }
+
+        this.usersSubscription = this.subscribeUsers();
+      });
   }
 
   addChat(user): void {
@@ -76,6 +94,15 @@ export class NewChatPage implements OnInit {
           // Invoke map with an empty array in case no user found
           .startWith([]);
       });
+  }
+
+  subscribeUsers(): Subscription {
+    const subscription = MeteorObservable.subscribe('users', this.searchPattern.getValue());
+    const autorun = MeteorObservable.autorun();
+
+    return Observable.merge(subscription, autorun).subscribe(() => {
+      this.users = this.findUsers();
+    });
   }
 
   handleError(e: Error): void {
