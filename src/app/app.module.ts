@@ -3,23 +3,25 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { MomentModule } from "angular2-moment";
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
+import { ChatsPage } from "../pages/chats/chats";
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage
+    ChatsPage
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    MomentModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage
+    ChatsPage
   ],
   providers: [
     StatusBar,
